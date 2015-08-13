@@ -187,6 +187,7 @@ class Escrotum(gtk.Window):
         self.root.set_events(gtk.gdk.BUTTON_PRESS | gtk.gdk.MOTION_NOTIFY |
                              gtk.gdk.BUTTON_RELEASE)
         self.grab_pointer(gtk.gdk.CROSSHAIR)
+        gtk.gdk.keyboard_grab(self.root)
         gtk.gdk.event_handler_set(self.event_handler)
 
     def ungrab(self):
@@ -603,9 +604,6 @@ class Escrotum(gtk.Window):
             if event.button != 1:
                 print "Canceled by the user"
                 exit(EXIT_CANCEL)
-
-            # grab the keyboard only when selection started
-            gtk.gdk.keyboard_grab(self.root)
 
             # keep initial click point
             self.click_x = x
