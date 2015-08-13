@@ -5,6 +5,7 @@ import sys
 import datetime
 import subprocess
 import argparse
+import random
 
 import gtk
 import cairo
@@ -48,7 +49,7 @@ class Escrotum(gtk.Window):
         self.rgba_support = False
         if (colormap is not None and self.screen.is_composited()):
             self.rgba_support = True
-            self.set_opacity(0.4)
+            self.set_opacity(.4)
 
         self.filename = filename
 
@@ -144,11 +145,12 @@ class Escrotum(gtk.Window):
     def on_expose(self, widget, event):
         width, height = self.get_size()
         white_gc = self.style.white_gc
-        black_gc = self.style.black_gc
+        bg_gc = self.area.window.new_gc()
+        bg_gc.set_foreground(self.bg_color)
 
         # actualy paint the window
         self.area.window.draw_rectangle(white_gc, True, 0, 0, width, height)
-        self.area.window.draw_rectangle(black_gc, True, 1, 1, width-2,
+        self.area.window.draw_rectangle(bg_gc, True, 1, 1, width-2,
                                         height-2)
         self.draw()
 
@@ -630,6 +632,10 @@ class Escrotum(gtk.Window):
             else:
                 self.move(self.x, self.y)
                 self.selection_state = SEL_STATE_DRAWING
+
+            if self.selection_state == SEL_STATE_DRAWING:
+                rand_bg_color = gtk.gdk.color_from_hsv(random.random(), 1., 1.)
+                self.bg_color = self.get_colormap().alloc_color(rand_bg_color)
 
         elif event.type == gtk.gdk.KEY_RELEASE:
             if gtk.gdk.keyval_name(event.keyval) == "Escape":
